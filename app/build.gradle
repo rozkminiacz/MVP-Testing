@@ -10,7 +10,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "tech.michalik.myapplication"
+        applicationId "tech.michalik.mvptesting"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
@@ -23,6 +23,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
 }
 
 import dependencies.*
@@ -31,6 +36,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation ArchitectureComponents.all
-    implementation 'com.github.rozkminiacz.MVX:mvx:-SNAPSHOT'
+    implementation Rx.all
+    implementation Network.all
+    implementation Utils.timber
 
+    testImplementation UnitTests.all
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 }
