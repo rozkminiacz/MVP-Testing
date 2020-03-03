@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.reactivex.Single
-import io.reactivex.schedulers.TestScheduler
 import org.junit.Test
 
 class MainScreenPresenterTest {
@@ -65,17 +64,13 @@ class MainScreenPresenterTest {
     fun `ON start fetching data IT SHOULD show progress indicator`() {
         val view: MainScreenContract.View = mockk(relaxed = true)
 
-        val testScheduler = TestScheduler()
-
         val fetchCurrencyUseCase: FetchCurrencyUseCase = mockk {
             every { execute() } returns Single.never()
         }
 
         val presenter = MainScreenPresenter(
             fetchCurrencyUseCase = fetchCurrencyUseCase,
-            schedulerProvider = InteractiveTestSchedulers(
-                testScheduler = testScheduler
-            )
+            schedulerProvider = TrampolineTestSchedulers()
         )
 
         presenter.attach(view)
@@ -89,22 +84,16 @@ class MainScreenPresenterTest {
     fun `ON fetching data complete IT SHOULD hide progress indicator`() {
         val view: MainScreenContract.View = mockk(relaxed = true)
 
-        val testScheduler = TestScheduler()
-
         val fetchCurrencyUseCase: FetchCurrencyUseCase = mockk {
             every { execute() } returns Single.just(fakeCurrencyList)
         }
 
         val presenter = MainScreenPresenter(
             fetchCurrencyUseCase = fetchCurrencyUseCase,
-            schedulerProvider = InteractiveTestSchedulers(
-                testScheduler = testScheduler
-            )
+            schedulerProvider = TrampolineTestSchedulers()
         )
 
         presenter.attach(view)
-
-        testScheduler.triggerActions()
 
         verify {
             view.toggleLoadingIndicator(false)
@@ -115,22 +104,16 @@ class MainScreenPresenterTest {
     fun `ON fetching data error IT SHOULD hide progress indicator`() {
         val view: MainScreenContract.View = mockk(relaxed = true)
 
-        val testScheduler = TestScheduler()
-
         val fetchCurrencyUseCase: FetchCurrencyUseCase = mockk {
             every { execute() } returns Single.error(Throwable("error occurred"))
         }
 
         val presenter = MainScreenPresenter(
             fetchCurrencyUseCase = fetchCurrencyUseCase,
-            schedulerProvider = InteractiveTestSchedulers(
-                testScheduler = testScheduler
-            )
+            schedulerProvider = TrampolineTestSchedulers()
         )
 
         presenter.attach(view)
-
-        testScheduler.triggerActions()
 
         verify {
             view.toggleLoadingIndicator(false)
